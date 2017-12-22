@@ -5,17 +5,17 @@ defmodule BlockDistribution do
       |> String.split()
       |> Enum.map(&String.to_integer/1)
 
-    seen = []
+    seen = %{}
     cycles = 0
     tick(banks, cycles, seen)
   end
 
   defp tick(banks, cycles, seen) do
     banks_string = Enum.join(banks)
-    if banks_string in seen do
-      cycles
+    if Map.has_key?(seen, banks_string) do
+      cycles - seen[banks_string]
     else
-      seen = [banks_string | seen]
+      seen = Map.put(seen, banks_string, cycles)
       banks = redistribute(banks)
       tick(banks, cycles + 1, seen)
     end
